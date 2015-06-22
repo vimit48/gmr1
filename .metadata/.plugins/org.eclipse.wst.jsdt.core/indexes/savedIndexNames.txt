@@ -1,0 +1,7 @@
+INDEX VERSION 1.122+C:\workspace\gmr1\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
+3696426456.index
+3013744478.index
+2346452824.index
+2287480063.index
+2447923536.index
+3179123538.index

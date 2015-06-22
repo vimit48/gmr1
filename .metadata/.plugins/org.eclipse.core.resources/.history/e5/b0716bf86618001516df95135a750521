@@ -1,0 +1,9 @@
+package com.gmr.data.dictionary;
+
+public class ExcelReader {
+	
+	public void readExcel(String file) {
+		
+	}
+
+}

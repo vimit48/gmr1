@@ -1,0 +1,113 @@
+package com.gmr.data.dictionary;
+
+import java.awt.Font;
+import java.awt.print.Book;
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.CellStyle;
+
+
+
+@WebServlet("/gmrdd")
+public class DataDictionaryController extends HttpServlet {
+	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+/*		ExcelDocument document = new ExcelDocument().open(new File("example/data/input/credit-balance-01.xls"));
+        DataReader reader = new ExcelReader(document)
+            .setSheetName("credit-balance")
+            .setFieldNamesInFirstRow(true);
+ 
+        reader.open();
+        try {
+            Record record;
+            while ((record = reader.read()) != null) {
+                log.info(record);
+            }
+        } finally {
+            reader.close();
+        }*/
+		
+		
+		XMLReader readXML = new XMLReader();
+		
+		List<List<String>> nodeDataList = null;
+		
+		nodeDataList = readXML.readXML();
+		//System.out.println("Data1: "+readDataList.get(0));
+		//System.out.println("Data2: "+readDataList.get(1));
+		request.removeAttribute("nodeDataList");// Need to change code
+		request.setAttribute("nodeDataList", nodeDataList);
+		request.setAttribute("name", "Vimit");
+		getServletContext().getRequestDispatcher("/WEB-INF/pages/GMRDDMain.jsp").forward(request, response);
+		
+		//response.getWriter().println("Hello friend!");	
+	
+	}
+	
+    public void buildExcelDocument()
+            throws Exception {
+        // get data model which is passed by the Spring container
+       // List<Book> listBooks = (List<Book>) model.get("listBooks");
+         
+        // create a new Excel sheet
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet sheet = workbook.createSheet("Java Books");
+        sheet.setDefaultColumnWidth(30);
+         
+        // create style for header cells
+        CellStyle style = workbook.createCellStyle();
+        
+        HSSFFont font = workbook.createFont();
+        
+        font.setFontName("Arial");
+        style.setFillForegroundColor(HSSFColor.BLUE.index);
+        style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        font.setColor(HSSFColor.WHITE.index);
+        style.setFont(font);
+         
+        // create header row
+        HSSFRow header = sheet.createRow(0);
+         
+        header.createCell(0).setCellValue("Book Title");
+        header.getCell(0).setCellStyle(style);
+         
+        header.createCell(1).setCellValue("Author");
+        header.getCell(1).setCellStyle(style);
+         
+        header.createCell(2).setCellValue("ISBN");
+        header.getCell(2).setCellStyle(style);
+         
+        header.createCell(3).setCellValue("Published Date");
+        header.getCell(3).setCellStyle(style);
+         
+        header.createCell(4).setCellValue("Price");
+        header.getCell(4).setCellStyle(style);
+         
+        // create data rows
+        int rowCount = 1;
+         
+/*        for (Book aBook : listBooks) {
+            HSSFRow aRow = sheet.createRow(rowCount++);
+            aRow.createCell(0).setCellValue(aBook.getTitle());
+            aRow.createCell(1).setCellValue(aBook.getAuthor());
+            aRow.createCell(2).setCellValue(aBook.getIsbn());
+            aRow.createCell(3).setCellValue(aBook.getPublishedDate());
+            aRow.createCell(4).setCellValue(aBook.getPrice());
+        }*/
+    }
+
+}

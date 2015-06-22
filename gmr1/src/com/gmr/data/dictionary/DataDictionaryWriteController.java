@@ -1,0 +1,49 @@
+package com.gmr.data.dictionary;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+@WebServlet("/writeGMRDD")
+public class DataDictionaryWriteController extends HttpServlet {
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		  
+
+	  
+	  ExcelReader excelReader = new ExcelReader();
+		
+	  XMLWriter writeXMLData = new XMLWriter();
+		
+		XMLReader readXML = new XMLReader();
+		//writeXMLData.writeXML(bucket, attribute, column, platform, dataEle, dataType, nullDefi, busiDefi);
+	  
+		ExcelWriter excelWriter = new ExcelWriter();
+		excelWriter.writeExcel(nodeDataList);
+		
+		List<List<String>> nodeDataList = null;
+		
+		if(request.getParameter("dataFile") != null) {
+			nodeDataList = excelReader.readExcel("GMRDataDictionary.xls");
+		}
+		else {
+			// Reading from XML
+			nodeDataList = readXML.readXML();
+		}
+		
+		request.setAttribute("nodeDataList", nodeDataList);
+		
+		getServletContext().getRequestDispatcher("/WEB-INF/pages/GMRDDMain.jsp").forward(request, response);
+		
+		//response.getWriter().println("Hello friend!");	
+	
+	}
+
+}

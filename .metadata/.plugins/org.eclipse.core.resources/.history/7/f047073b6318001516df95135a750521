@@ -1,0 +1,211 @@
+package com.gmr.data.dictionary;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+
+
+
+@WebServlet("/gmrdd")
+public class DataDictionaryController extends HttpServlet {
+	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+/*		ExcelDocument document = new ExcelDocument().open(new File("example/data/input/credit-balance-01.xls"));
+        DataReader reader = new ExcelReader(document)
+            .setSheetName("credit-balance")
+            .setFieldNamesInFirstRow(true);
+ 
+        reader.open();
+        try {
+            Record record;
+            while ((record = reader.read()) != null) {
+                log.info(record);
+            }
+        } finally {
+            reader.close();
+        }*/
+		
+		writeExcel();
+		readExcel();
+		buildExcelDocument();
+		
+		XMLReader readXML = new XMLReader();
+		
+		List<List<String>> nodeDataList = null;
+		
+		nodeDataList = readXML.readXML();
+		//System.out.println("Data1: "+readDataList.get(0));
+		//System.out.println("Data2: "+readDataList.get(1));
+		request.removeAttribute("nodeDataList");// Need to change code
+		request.setAttribute("nodeDataList", nodeDataList);
+		request.setAttribute("name", "Vimit");
+		getServletContext().getRequestDispatcher("/WEB-INF/pages/GMRDDMain.jsp").forward(request, response);
+		
+		//response.getWriter().println("Hello friend!");	
+	
+	}
+	
+	public void writeExcel() {
+		
+		 Workbook wb = new HSSFWorkbook();
+		    //Workbook wb = new XSSFWorkbook();
+		    CreationHelper createHelper = wb.getCreationHelper();
+		    Sheet sheet = wb.createSheet("new sheet");
+
+		    // Create a row and put some cells in it. Rows are 0 based.
+		    Row row = sheet.createRow((short)0);
+		    // Create a cell and put a value in it.
+		    Cell cell = row.createCell(0);
+		    cell.setCellValue(1);
+
+		    // Or do it on one line.
+		    row.createCell(1).setCellValue(1.2);
+		    row.createCell(2).setCellValue(
+		         createHelper.createRichTextString("This is a string"));
+		    row.createCell(3).setCellValue(true);
+		    try {
+			    // Write the output to a file
+			    FileOutputStream fileOut = new FileOutputStream("workbook.xls");
+			    wb.write(fileOut);
+			    fileOut.close();
+		    } catch (Exception e) {
+		    	e.printStackTrace();
+		    }
+	}
+	
+	public void readExcel() {
+		
+		 try
+	        {
+	            FileInputStream file = new FileInputStream(new File("howtodoinjava_demo.xlsx"));
+	 
+	            //Create Workbook instance holding reference to .xlsx file
+	            HSSFWorkbook workbook = new HSSFWorkbook(file);
+	 
+	            //Get first/desired sheet from the workbook
+	            HSSFSheet sheet = workbook.getSheetAt(0);
+	 
+	            //Iterate through each rows one by one
+	            Iterator<Row> rowIterator = sheet.iterator();
+	            while (rowIterator.hasNext())
+	            {
+	                Row row = rowIterator.next();
+	                //For each row, iterate through all the columns
+	                Iterator<Cell> cellIterator = row.cellIterator();
+	                 
+	                while (cellIterator.hasNext())
+	                {
+	                    Cell cell = cellIterator.next();
+	                    //Check the cell type and format accordingly
+	                    switch (cell.getCellType())
+	                    {
+	                        case Cell.CELL_TYPE_NUMERIC:
+	                            System.out.print(cell.getNumericCellValue() + "t");
+	                            break;
+	                        case Cell.CELL_TYPE_STRING:
+	                            System.out.print(cell.getStringCellValue() + "t");
+	                            break;
+	                    }
+	                }
+	                System.out.println("");
+	            }
+	            file.close();
+	        }
+	        catch (Exception e)
+	        {
+	            e.printStackTrace();
+	        }
+		
+	}
+	
+	
+    public void buildExcelDocument()
+             {
+        // get data model which is passed by the Spring container
+       // List<Book> listBooks = (List<Book>) model.get("listBooks");
+         
+        // create a new Excel sheet
+    	try {
+	    	File file = new File("abc.xlxs");
+	    	
+	    	InputStream s = new FileInputStream(file);
+	    	
+	        HSSFWorkbook workbook = new HSSFWorkbook(s);
+	        
+	        String location = workbook.getRootDirectory().toString();
+	        HSSFSheet sheet = workbook.createSheet("Java Books");
+	        sheet.setDefaultColumnWidth(30);
+	         
+	        // create style for header cells
+	        CellStyle style = workbook.createCellStyle();
+	        
+	        HSSFFont font = workbook.createFont();
+	        
+	        font.setFontName("Arial");
+	        style.setFillForegroundColor(HSSFColor.BLUE.index);
+	        style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+	        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+	        font.setColor(HSSFColor.WHITE.index);
+	        style.setFont(font);
+	         
+	        // create header row
+	        HSSFRow header = sheet.createRow(0);
+	         
+	        header.createCell(0).setCellValue("Book Title");
+	        header.getCell(0).setCellStyle(style);
+	         
+	        header.createCell(1).setCellValue("Author");
+	        header.getCell(1).setCellStyle(style);
+	         
+	        header.createCell(2).setCellValue("ISBN");
+	        header.getCell(2).setCellStyle(style);
+	         
+	        header.createCell(3).setCellValue("Published Date");
+	        header.getCell(3).setCellStyle(style);
+	         
+	        header.createCell(4).setCellValue("Price");
+	        header.getCell(4).setCellStyle(style);
+        
+    	} catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    	
+ 
+         
+        // create data rows
+        int rowCount = 1;
+         
+/*        for (Book aBook : listBooks) {
+            HSSFRow aRow = sheet.createRow(rowCount++);
+            aRow.createCell(0).setCellValue(aBook.getTitle());
+            aRow.createCell(1).setCellValue(aBook.getAuthor());
+            aRow.createCell(2).setCellValue(aBook.getIsbn());
+            aRow.createCell(3).setCellValue(aBook.getPublishedDate());
+            aRow.createCell(4).setCellValue(aBook.getPrice());
+        }*/
+    }
+
+}
